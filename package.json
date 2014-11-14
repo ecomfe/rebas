@@ -1,0 +1,17 @@
+{
+  "name": "touchws",
+  "version": "0.1.0",
+  "description": "webserver",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "treelite",
+      "email": "c.xinle@gmail.com"
+    }
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "etpl": "^3.0.0",
+    "express": "^4.10.2"
+  }
+}
