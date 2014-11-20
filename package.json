@@ -1,7 +1,7 @@
 {
-  "name": "touchws",
+  "name": "rebas-touch",
   "version": "0.1.0",
-  "description": "webserver",
+  "description": "Rebas Server",
   "main": "index.js",
   "maintainers": [
     {
