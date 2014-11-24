@@ -1,0 +1,8 @@
+{
+    "port": 8000,
+    "cluster": 0,
+    "route": "./route",
+    "template": "./tpl",
+    "templateCommon": "./tpl/common",
+    "action": "./lib"
+}
