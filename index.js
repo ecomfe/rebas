@@ -11,6 +11,29 @@ var extend = require('./lib/util/extend');
 var readConfig = require('./lib/util/readConfig');
 
 /**
+ * 从命令行获取配置信息
+ *
+ * @inner
+ * @return {Object=}
+ */
+function getConfigFromCmd() {
+    var file;
+    var args = process.argv;
+    var path = require('path');
+
+    for (var i = 0, item; item = args[i]; i++) {
+        if (item === '-c' || item === '--config') {
+            file = args[i + 1];
+            break;
+        }
+    }
+
+    if (file) {
+        return readConfig(path.resolve(process.cwd(), file));
+    }
+}
+
+/**
  * 使用cluster启动App
  *
  * @inner
@@ -19,7 +42,7 @@ var readConfig = require('./lib/util/readConfig');
 function startAppWithCluster(server) {
     var cluster = require('cluster');
     var num = server.config.cluster;
-    num = num == 'max' ? require('os').cpus().length : num;
+    num = num === 'max' ? require('os').cpus().length : num;
 
     if (cluster.isMaster) {
         for (var i = 0; i < num; i++) {
@@ -55,8 +78,11 @@ function startApp(server) {
  */
 function Server(callback) {
     var path = require('path');
+
     var defaultConfig = readConfig(path.resolve(__dirname, CONFIG_FILE));
-    this.config = extend(defaultConfig, readConfig(path.resolve(process.cwd(), CONFIG_FILE)) || {});
+    var extConfig = getConfigFromCmd() || readConfig(path.resolve(process.cwd(), CONFIG_FILE)) || {};
+    this.config = extend(defaultConfig, extConfig);
+
     this.callback = callback;
 }
 
@@ -76,4 +102,4 @@ Server.prototype.start = function () {
 
 module.exports = function (callback) {
     return new Server(callback);
-}
+};
