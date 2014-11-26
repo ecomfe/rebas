@@ -1,7 +1,7 @@
 {
-  "name": "rebas-touch",
+  "name": "rebas",
   "version": "0.1.0",
-  "description": "Rebas Server",
+  "description": "node framework",
   "main": "index.js",
   "maintainers": [
     {
