@@ -5,31 +5,32 @@
 
 var App = require('./lib/App');
 
-var CONFIG_FILE = 'rebas-config.json';
+var DEFAULT_CONFIG_DIR = 'config';
+var CONFIG_FILE = 'rebas.json';
 
 var extend = require('./lib/util/extend');
 var readConfig = require('./lib/util/readConfig');
 
 /**
- * 从命令行获取配置信息
+ * 从命令行获取配置文件的路径
  *
  * @inner
- * @return {Object=}
+ * @return {string}
  */
-function getConfigFromCmd() {
-    var file;
+function getConfigDir() {
+    var dir;
     var args = process.argv;
     var path = require('path');
 
     for (var i = 0, item; item = args[i]; i++) {
         if (item === '-c' || item === '--config') {
-            file = args[i + 1];
+            dir = args[i + 1];
             break;
         }
     }
 
-    if (file) {
-        return readConfig(path.resolve(process.cwd(), file));
+    if (dir) {
+        return path.resolve(process.cwd(), dir);
     }
 }
 
@@ -63,7 +64,7 @@ function startAppWithCluster(server) {
  * @param {Object} server
  */
 function startApp(server) {
-    var app = new App(server.config);
+    var app = new App(server);
     if (server.callback) {
         server.callback(app);
     }
@@ -79,8 +80,9 @@ function startApp(server) {
 function Server(callback) {
     var path = require('path');
 
+    this.configDir = getConfigDir() || path.resolve(process.cwd(), DEFAULT_CONFIG_DIR);
     var defaultConfig = readConfig(path.resolve(__dirname, CONFIG_FILE));
-    var extConfig = getConfigFromCmd() || readConfig(path.resolve(process.cwd(), CONFIG_FILE)) || {};
+    var extConfig = readConfig(path.resolve(this.configDir, CONFIG_FILE)) || {};
     this.config = extend(defaultConfig, extConfig);
 
     this.callback = callback;
@@ -97,6 +99,24 @@ Server.prototype.start = function () {
     }
     else {
         startApp(this);
+    }
+};
+
+/**
+ * 获取配置信息
+ * 如果省略参数则返回Server的配置信息
+ *
+ * @public
+ * @param {string=} name 配置文件名
+ * @return {*}
+ */
+Server.prototype.getConfig = function (name) {
+    var path = require('path');
+    if (!name) {
+        return extend({}, this.conig);
+    }
+    else {
+        return readConfig(path.resolve(this.configDir, name));
     }
 };
 
