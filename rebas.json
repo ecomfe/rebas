@@ -3,6 +3,7 @@
     "cluster": 0,
     "route": "route",
     "template": "tpl",
+    "templateConfig": "tpl/config.json",
     "templateCommon": "tpl/common",
     "action": "lib"
 }
