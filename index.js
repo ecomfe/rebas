@@ -49,8 +49,13 @@ function startAppWithCluster(server) {
         for (var i = 0; i < num; i++) {
             cluster.fork();
         }
-        // TODO
-        // 线程错误处理
+
+        cluster.on('exit', function (worker, code, signal) {
+            // TODO
+            // 线程错误处理
+
+            cluster.fork();
+        });
     }
     else {
         startApp(server);
