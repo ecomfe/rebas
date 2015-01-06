@@ -64,7 +64,7 @@ server.start();
 ```js
 {
     "port": 8000, // 服务器端口号
-    "cluster": 0, // worker进程数，可以直接写‘max’，自动取最大值
+    "cluster": 0, // worker进程数，可以直接写'max'，自动取最大值
     "route": "route", // 路由配置文件目录
     "template": "tpl", // 模版文件目录
     "templateCommon": "tpl/common", // 公共模版文件目录
