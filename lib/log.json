@@ -1,0 +1,14 @@
+{
+    "appenders": [
+        {
+            "type": "file",
+            "category": "Rebas",
+            "maxLogSize": "2048000",
+            "filename": "core.log",
+            "layout": {
+                "type": "pattern",
+                "pattern": "[%d] [%p] %c %m"
+            }
+        }
+    ]
+}

@@ -10,6 +10,7 @@ var CONFIG_FILE = 'rebas.json';
 
 var extend = require('./lib/util/extend');
 var readConfig = require('./lib/util/readConfig');
+var log = require('./lib/log').get(__filename);
 
 /**
  * 从命令行获取配置文件的路径
@@ -43,17 +44,21 @@ function getConfigDir() {
 function startAppWithCluster(server) {
     var cluster = require('cluster');
     var num = server.config.cluster;
-    num = num === 'max' ? require('os').cpus().length : num;
+    var maxNum = require('os').cpus().length;
+
+    if (num === 'max' || num > maxNum) {
+        num = maxNum;
+    }
 
     if (cluster.isMaster) {
+        log.info('start with %s clusters', num);
         for (var i = 0; i < num; i++) {
             cluster.fork();
         }
 
         cluster.on('exit', function (worker, code, signal) {
-            // TODO
             // 线程错误处理
-
+            log.fetal('woker died (%s), restarting...', signal || code);
             cluster.fork();
         });
     }
@@ -91,6 +96,9 @@ function Server(callback) {
     this.config = extend(defaultConfig, extConfig);
 
     this.callback = callback;
+
+    // 初始化日志模块
+    require('./lib/log').init(this.configDir);
 }
 
 /**
@@ -99,12 +107,14 @@ function Server(callback) {
  * @public
  */
 Server.prototype.start = function () {
+    log.info('server start');
     if (this.config.cluster) {
         startAppWithCluster(this);
     }
     else {
         startApp(this);
     }
+    log.info('server start finish');
 };
 
 /**
