@@ -10,6 +10,7 @@ var CONFIG_FILE = 'rebas.json';
 
 var extend = require('./lib/util/extend');
 var readConfig = require('./lib/util/readConfig');
+
 var log = require('./lib/log').get(__filename);
 
 /**
