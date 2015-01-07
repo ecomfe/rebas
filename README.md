@@ -106,6 +106,47 @@ exports.get = function (req, res, next) {
 * **res** `{Response}` [HTTP响应对象](doc/response.md)
 * **next** `{function}` 执行下一个处理器
 
+#### 主框架页面
+
+位于根目录的`index.html`，标准的HTML文件。使用占位符`<!-- rebas:xxx -->`方便渲染实际页面时插入动态数据。其中固有的占位符是`<!-- rebas:content -->`，表示后续渲染内容的插入位置，比如：
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Startup News</title>
+
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="/src/common/app.css">
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-6/esl.js"></script>
+
+    <script>
+        // AMD Loader Configure
+        require.config({
+            ...
+        });
+    </script>
+</head>
+<body>
+    <div id="viewport">
+        <!-- 默认的内容占位符 后续动态渲染的页面会插入此处 -->
+        <!-- rebas: content -->
+    </div>
+    <script>
+        // 启动前端代码
+        require(['app'], function (app) {
+            app.init();
+        });
+    </script>
+</body>
+</html>
+```
+
 ### Methods
 
 #### rebas(fn)
