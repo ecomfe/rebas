@@ -9,6 +9,9 @@
       "email": "c.xinle@gmail.com"
     }
   ],
+  "contributors": [
+    { "name": "redmed", "email": "qiaogang2003@163.com" }
+  ],
   "license": "ISC",
   "dependencies": {
     "etpl": "^3.0.0",
