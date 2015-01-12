@@ -9,13 +9,22 @@
       "email": "c.xinle@gmail.com"
     }
   ],
+  "scripts": {
+    "test": "jasmine-node test/"
+  },
   "contributors": [
-    { "name": "redmed", "email": "qiaogang2003@163.com" }
+    {
+      "name": "redmed",
+      "email": "qiaogang2003@163.com"
+    }
   ],
   "license": "ISC",
   "dependencies": {
     "etpl": "^3.0.0",
     "express": "^4.10.2",
-    "rebas-logger":"^0.1.0"
+    "rebas-logger": "^0.1.0"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
   }
 }
