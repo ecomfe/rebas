@@ -14,7 +14,7 @@ describe('support etpl', function () {
             var data = {name: 'etpl'};
             var tpl = path.resolve(__dirname, 'mock/template.tpl');
 
-            etpl(tpl, data, function (unused, res) {
+            etpl(tpl, data, function (error, res) {
                 expect(res.trim()).toEqual(data.name);
                 done();
             });
@@ -25,7 +25,7 @@ describe('support etpl', function () {
             var tpl = path.resolve(__dirname, 'mock/template.tpl');
             tpl += '#content';
 
-            etpl(tpl, data, function (unused, res) {
+            etpl(tpl, data, function (error, res) {
                 expect(res.trim()).toEqual(data.content);
                 done();
             });
@@ -41,7 +41,7 @@ describe('support etpl', function () {
             var tpl = path.resolve(__dirname, 'mock/sub.tpl');
 
             etpl.load(commonTpl);
-            etpl(tpl, data, function (unused, res) {
+            etpl(tpl, data, function (error, res) {
                 expect(res.trim()).toEqual(data.subname + '\n' + data.common);
                 done();
             });
