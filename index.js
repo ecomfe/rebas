@@ -108,7 +108,7 @@ function Server(callback) {
  * @public
  */
 Server.prototype.start = function () {
-    log.info('server start');
+    log.info('server start at ' + this.config.port);
     if (this.config.cluster) {
         startAppWithCluster(this);
     }
