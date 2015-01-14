@@ -59,7 +59,7 @@ function startAppWithCluster(server) {
 
         cluster.on('exit', function (worker, code, signal) {
             // 线程错误处理
-            log.fetal('woker died (%s), restarting...', signal || code);
+            log.fatal('woker died (%s), restarting...', signal || code);
             cluster.fork();
         });
     }
@@ -75,11 +75,14 @@ function startAppWithCluster(server) {
  * @param {Object} server
  */
 function startApp(server) {
+    var pid = process.pid;
+    log.info('server(%s) start at %s', pid, server.config.port);
     var app = new App(server);
     if (server.callback) {
         server.callback(app);
     }
     app.start();
+    log.info('server(%s) start finish', pid);
 }
 
 /**
@@ -108,14 +111,12 @@ function Server(callback) {
  * @public
  */
 Server.prototype.start = function () {
-    log.info('server start at ' + this.config.port);
     if (this.config.cluster) {
         startAppWithCluster(this);
     }
     else {
         startApp(this);
     }
-    log.info('server start finish');
 };
 
 /**
