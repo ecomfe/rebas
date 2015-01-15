@@ -140,3 +140,6 @@ Server.prototype.getConfig = function (name) {
 module.exports = function (callback) {
     return new Server(callback);
 };
+
+// 导出Helper
+module.exports.helper = require('./lib/helper');
