@@ -22,7 +22,8 @@
   "dependencies": {
     "etpl": "^3.0.0",
     "express": "^4.10.2",
-    "rebas-logger": "^0.1.0"
+    "saber-lang": "^1.0.0",
+    "saber-mm": "^1.0.0"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5"

@@ -1,4 +1,0 @@
-${name}
-
-<!-- target: content -->
-${content}
