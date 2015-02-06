@@ -1,145 +1,78 @@
 /**
- * @file main
+ * @file server
  * @author treelite(c.xinle@gmail.com)
  */
 
-var App = require('./lib/App');
+var express = require('express');
+var mm = require('saber-mm');
+var router = require('./lib/router');
+var Element = require('./lib/Element');
 
-var DEFAULT_CONFIG_DIR = 'config';
-var CONFIG_FILE = 'rebas.json';
-
-var extend = require('./lib/util/extend');
-var readConfig = require('./lib/util/readConfig');
-
-var log = require('./lib/log').get(__filename);
+// 启动tpl扩展
+require('./lib/tpl');
 
 /**
- * 从命令行获取配置文件的路径
+ * 运行Presenter
  *
  * @inner
- * @return {string}
+ * @param {Object} route 路由信息
+ * @param {Object} route.action Presenter配置
+ * @param {string} path 请求路径
+ * @param {Object} query 请求参数
+ * @param {Object} res 请求响应对象
+ * @param {Function} next 执行下一个路由处理器
  */
-function getConfigDir() {
-    var dir;
-    var args = process.argv;
-    var path = require('path');
+function run(route, path, query, res, next) {
+    var presenter = mm.create(route.action);
+    var ele = new Element('div');
 
-    for (var i = 0, item; item = args[i]; i++) {
-        if (item === '-c' || item === '--config') {
-            dir = args[i + 1];
-            break;
-        }
-    }
-
-    if (dir) {
-        return path.resolve(process.cwd(), dir);
-    }
+    presenter
+        .enter(ele, path, query)
+        .then(
+            function () {
+                var model = presenter.model;
+                res.html = ele.outerHTML;
+                res.data = model.store;
+                next();
+            },
+            next
+        );
 }
 
-/**
- * 使用cluster启动App
- *
- * @inner
- * @param {Object} server
- */
-function startAppWithCluster(server) {
-    var cluster = require('cluster');
-    var num = server.config.cluster;
-    var maxNum = require('os').cpus().length;
-
-    if (num === 'max' || num > maxNum) {
-        num = maxNum;
-    }
-
-    if (cluster.isMaster) {
-        log.info('start with %s clusters', num);
-        for (var i = 0; i < num; i++) {
-            cluster.fork();
-        }
-
-        cluster.on('exit', function (worker, code, signal) {
-            // 线程错误处理
-            log.fatal('woker died (%s), restarting...', signal || code);
-            cluster.fork();
-        });
-    }
-    else {
-        startApp(server);
-    }
-}
 
 /**
- * 启动App
- *
- * @inner
- * @param {Object} server
- */
-function startApp(server) {
-    var pid = process.pid;
-    log.info('server(%s) start at %s', pid, server.config.port);
-    var app = new App(server);
-    if (server.callback) {
-        server.callback(app);
-    }
-    app.start();
-    log.info('server(%s) start finish', pid);
-}
-
-/**
- * Server
+ * 加载路由信息
  *
  * @public
- * @param {Function=} callback
+ * @param {Object|Array.<Object>} routes 路由信息
  */
-function Server(callback) {
-    var path = require('path');
-
-    this.configDir = getConfigDir() || path.resolve(process.cwd(), DEFAULT_CONFIG_DIR);
-    var defaultConfig = readConfig(path.resolve(__dirname, CONFIG_FILE));
-    var extConfig = readConfig(path.resolve(this.configDir, CONFIG_FILE)) || {};
-    this.config = extend(defaultConfig, extConfig);
-
-    this.callback = callback;
-
-    // 初始化日志模块
-    require('./lib/log').init(this.configDir);
-}
-
-/**
- * 启动服务器
- *
- * @public
- */
-Server.prototype.start = function () {
-    if (this.config.cluster) {
-        startAppWithCluster(this);
+exports.load = function (routes) {
+    if (!Array.isArray(routes)) {
+        routes = [routes];
     }
-    else {
-        startApp(this);
-    }
+    routes.forEach(function (route) {
+        router.add(route.path, run.bind(null, route));
+    });
 };
 
 /**
- * 获取配置信息
- * 如果省略参数则返回Server的配置信息
+ * 启动Server
  *
  * @public
- * @param {string=} name 配置文件名
- * @return {*}
+ * @param {number} port 端口
+ * @param {Object} options 配置信息
  */
-Server.prototype.getConfig = function (name) {
-    var path = require('path');
-    if (!name) {
-        return extend({}, this.conig);
-    }
-    else {
-        return readConfig(path.resolve(this.configDir, name));
-    }
-};
+exports.start = function (port, options) {
+    options = options || {};
 
-module.exports = function (callback) {
-    return new Server(callback);
-};
+    mm.config({
+        template: options.template || ''
+    });
 
-// 导出Helper
-module.exports.helper = require('./lib/helper');
+    var app = express();
+
+    router.use(app);
+    app.use(require('./lib/middleware/renderHTML'));
+
+    app.listen(port);
+};
