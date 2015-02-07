@@ -7,6 +7,16 @@ var express = require('express');
 var mm = require('saber-mm');
 var router = require('./lib/router');
 var Element = require('./lib/Element');
+var getConfig = require('./lib/util/get-config');
+var config = require('./lib/config');
+
+// 从命令行参数获取配置文件夹地址
+var configDir = process.argv[2];
+config.configDir = configDir || config.configDir;
+
+// 初始化日志模块
+var log = require('./lib/log');
+log.init();
 
 // 启动tpl扩展
 require('./lib/tpl');
@@ -39,6 +49,17 @@ function run(route, path, query, res, next) {
         );
 }
 
+/**
+ * 附加中间件
+ *
+ * @param {Object} app
+ */
+function attachMiddleware(app) {
+    app.use(log.express());
+    app.use(require('./lib/middleware/init'));
+    router.use(app);
+    app.use(require('./lib/middleware/renderHTML'));
+}
 
 /**
  * 加载路由信息
@@ -63,16 +84,32 @@ exports.load = function (routes) {
  * @param {Object} options 配置信息
  */
 exports.start = function (port, options) {
-    options = options || {};
+    log.info('server starting ...');
 
+    port = port || config.port;
+    options = options || {};
     mm.config({
-        template: options.template || ''
+        template: options.template || '',
+        templateConfig: options.templateConfig || {},
+        templateData: options.templateData || {}
     });
 
     var app = express();
 
-    router.use(app);
-    app.use(require('./lib/middleware/renderHTML'));
+    attachMiddleware(app);
 
     app.listen(port);
+
+    log.info('server start at %s', port);
+};
+
+/**
+ * 获取配置项信息
+ *
+ * @public
+ * @param {string} name 配置项文件名
+ * @return {Object|Array}
+ */
+exports.get = function (name) {
+    return getConfig(name);
 };
