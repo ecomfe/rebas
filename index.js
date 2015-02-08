@@ -88,10 +88,17 @@ exports.start = function (port, options) {
 
     port = port || config.port;
     options = options || {};
+
+    // 保存模版配置信息
+    var tpl = config.tpl = {
+        config: options.templateConfig || {},
+        data: options.templateData || {}
+    };
+
     mm.config({
         template: options.template || '',
-        templateConfig: options.templateConfig || {},
-        templateData: options.templateData || {}
+        templateConfig: tpl.config,
+        templateData: tpl.data
     });
 
     var app = express();
