@@ -52,13 +52,22 @@ function run(route, path, query, res, next) {
 /**
  * 附加中间件
  *
- * @param {Object} app
+ * @param {Object} app App对象
+ * @param {Object} options 配置项
  */
-function attachMiddleware(app) {
+function attachMiddleware(app, options) {
+    // 日志中间件
     app.use(log.express());
+    // 初始化中间件
     app.use(require('./lib/middleware/init'));
+    // 路由绑定
     router.use(app);
-    app.use(require('./lib/middleware/renderHTML'));
+    // 页面渲染中间件
+    var renderHTML = require('./lib/middleware/renderHTML');
+    app.use(renderHTML({
+        templateData: options.templateData,
+        indexFile: options.indexFile
+    }));
 }
 
 /**
@@ -81,7 +90,11 @@ exports.load = function (routes) {
  *
  * @public
  * @param {number} port 端口
- * @param {Object} options 配置信息
+ * @param {Object=} options 配置信息
+ * @param {string=} options.template 通用模版
+ * @param {Object=} options.templateConfig 模版配置信息
+ * @param {Object=} options.templatedata 通用模版数据
+ * @param {string=} options.indexFile 首页模版文件
  */
 exports.start = function (port, options) {
     log.info('server starting ...');
@@ -89,21 +102,17 @@ exports.start = function (port, options) {
     port = port || config.port;
     options = options || {};
 
-    // 保存模版配置信息
-    var tpl = config.tpl = {
-        config: options.templateConfig || {},
-        data: options.templateData || {}
-    };
-
+    // saber-mm 配置
     mm.config({
-        template: options.template || '',
-        templateConfig: tpl.config,
-        templateData: tpl.data
+        template: options.template,
+        templateConfig: options.templateConfig,
+        templateData: options.templateData
     });
 
     var app = express();
 
-    attachMiddleware(app);
+    // 附加中间件
+    attachMiddleware(app, options);
 
     app.listen(port);
 
