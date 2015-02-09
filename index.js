@@ -68,6 +68,8 @@ function attachMiddleware(app, options) {
         templateData: options.templateData,
         indexFile: options.indexFile
     }));
+    // 错误处理
+    app.use(require('./lib/middleware/error'));
 }
 
 /**
@@ -129,3 +131,6 @@ exports.start = function (port, options) {
 exports.get = function (name) {
     return getConfig(name);
 };
+
+// Export Logger
+exports.logger = log;
