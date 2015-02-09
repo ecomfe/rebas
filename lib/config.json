@@ -1,4 +1,5 @@
 {
     "configDir": "config",
-    "port": "8000"
+    "port": "8000",
+    "syncData": {}
 }

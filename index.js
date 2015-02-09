@@ -132,5 +132,16 @@ exports.get = function (name) {
     return getConfig(name);
 };
 
+/**
+ * 设置需要前后端同步的数据
+ *
+ * @public
+ * @param {string} name 数据名称
+ * @param {*} value 数据内容
+ */
+exports.setSyncData = function (name, value) {
+    config.syncData[name] = value;
+};
+
 // Export Logger
 exports.logger = log;
