@@ -10,6 +10,9 @@ var Element = require('./lib/Element');
 var getConfig = require('./lib/util/get-config');
 var config = require('./lib/config');
 
+var beforeMiddlewares = [];
+var afterMiddlewares = [];
+
 // 从命令行参数获取配置文件夹地址
 var configDir = process.argv[2];
 config.configDir = configDir || config.configDir;
@@ -60,8 +63,16 @@ function attachMiddleware(app, options) {
     app.use(log.express());
     // 初始化中间件
     app.use(require('./lib/middleware/init'));
+    // 附加自定义中间件
+    beforeMiddlewares.forEach(function (fn) {
+        app.use(fn);
+    });
     // 路由绑定
     router.use(app);
+    // 附加自定义中间件
+    afterMiddlewares.forEach(function (fn) {
+        app.use(fn);
+    });
     // 页面渲染中间件
     var renderHTML = require('./lib/middleware/renderHTML');
     app.use(renderHTML({
@@ -141,6 +152,26 @@ exports.get = function (name) {
  */
 exports.setSyncData = function (name, value) {
     config.syncData[name] = value;
+};
+
+/**
+ * 添加前缀中间件
+ *
+ * @public
+ * @param {Function} middleware
+ */
+exports.before = function (middleware) {
+    beforeMiddlewares.push(middleware);
+};
+
+/**
+ * 添加后缀中间件
+ *
+ * @public
+ * @param {Function} middleware
+ */
+exports.after = function (middleware) {
+    afterMiddlewares.push(middleware);
 };
 
 // Export Logger
