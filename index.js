@@ -21,6 +21,17 @@ config.configDir = configDir || config.configDir;
 var log = require('./lib/log');
 log.init();
 
+// 只要一息尚存就要日志!
+process.on('uncaughtException', function (e) {
+    // 必须同步调用
+    // process.exit后事件循环机制就停止了，异步还有鸟用...
+    log.fatalSync(e.stack);
+    // cluster下监听了这个事件后如果不手动调用`exit`，错误的子进程不会自动退出
+    // 但是又不能直接调用`process.exit`，因为这样搞会让后续监控该事件的回调都不会执行了
+    // 所以使用延迟调用，先让当前所有的任务执行完毕了再退出
+    process.nextTick(process.exit.bind(process, 1));
+});
+
 // 启动tpl扩展
 require('./lib/tpl');
 
@@ -111,6 +122,7 @@ exports.load = function (routes) {
  */
 exports.start = function (port, options) {
     log.info('server starting ...');
+    log.info('argv: %s', process.argv.join(', '));
 
     port = port || config.port;
     options = options || {};
