@@ -21,6 +21,7 @@ config.configDir = configDir || config.configDir;
 var log = require('./lib/log');
 log.init();
 
+
 // 只要一息尚存就要日志!
 process.on('uncaughtException', function (e) {
     // 必须同步调用
@@ -73,7 +74,7 @@ function attachMiddleware(app, options) {
     // 日志中间件
     app.use(log.express());
     // 初始化中间件
-    app.use(require('./lib/middleware/init'));
+    app.use(require('./lib/middleware/init')(exports));
     // 附加自定义中间件
     beforeMiddlewares.forEach(function (fn) {
         app.use(fn);
@@ -93,6 +94,33 @@ function attachMiddleware(app, options) {
     // 错误处理
     app.use(require('./lib/middleware/error'));
 }
+
+/**
+ * 当前的请求上下文
+ *
+ * @type {Object}
+ */
+var currentContext;
+
+/**
+ * 设置请求上下文
+ *
+ * @public
+ * @param {Object} context 请求上下文
+ */
+exports.setContext = function (context) {
+    currentContext = context;
+};
+
+/**
+ * 获取请求上下文
+ *
+ * @public
+ * @return {Object}
+ */
+exports.getContext = function () {
+    return currentContext;
+};
 
 /**
  * 加载路由信息
@@ -185,6 +213,9 @@ exports.before = function (middleware) {
 exports.after = function (middleware) {
     afterMiddlewares.push(middleware);
 };
+
+// 运行环境设置
+require('./lib/env')(exports);
 
 // Export Logger
 exports.logger = log;
