@@ -1,6 +1,6 @@
 {
   "name": "rebas",
-  "version": "0.2.0",
+  "version": "0.2.0-alpha.1",
   "description": "node runtime for Saber",
   "main": "index.js",
   "maintainers": [
