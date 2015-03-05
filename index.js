@@ -66,6 +66,47 @@ function run(route, path, query, res, next) {
 }
 
 /**
+ * 当前的请求上下文
+ *
+ * @type {Object}
+ */
+var currentContext;
+
+/**
+ * 上下文存储容器
+ *
+ * @type {Object}
+ */
+var contextStorage = {};
+
+/**
+ * 设置当前的上下文
+ *
+ * @param {Object} req 请求对象
+ * @param {Object} res 响应对象
+ * @param {Function} next 执行下一个中间件
+ */
+function setContext(req, res, next) {
+    currentContext = {req: req, res: res};
+    next();
+}
+
+/**
+ * 清除暂存的上下文
+ *
+ * @param {Object} req 请求对象
+ * @param {Object} res 响应对象
+ * @param {Function} next 执行下一个中间件
+ */
+function clearContext(req, res, next) {
+    var id = req.uid;
+    if (contextStorage.hasOwnProperty(id)) {
+        delete contextStorage[id];
+    }
+    next();
+}
+
+/**
  * 附加中间件
  *
  * @param {Object} app App对象
@@ -75,17 +116,25 @@ function attachMiddleware(app, options) {
     // 日志中间件
     app.use(log.express());
     // 初始化中间件
-    app.use(require('./lib/middleware/init')(exports));
+    app.use(require('./lib/middleware/init'));
+    // 设置上下文
+    app.use(setContext);
+
     // 附加自定义中间件
     beforeMiddlewares.forEach(function (fn) {
         app.use(fn);
     });
+
     // 路由绑定
     router.use(app);
+
     // 附加自定义中间件
     afterMiddlewares.forEach(function (fn) {
         app.use(fn);
     });
+
+    // 清除上下文
+    app.use(clearContext);
     // 页面渲染中间件
     var renderHTML = require('./lib/middleware/renderHTML');
     app.use(renderHTML({
@@ -97,24 +146,36 @@ function attachMiddleware(app, options) {
 }
 
 /**
- * 当前的请求上下文
- *
- * @type {Object}
- */
-var currentContext;
-
-/**
- * 设置请求上下文
+ * 暂存上下文
  *
  * @public
- * @param {Object} context 请求上下文
+ * @return {string}
  */
-exports.setContext = function (context) {
-    currentContext = context;
+exports.stashContext = function () {
+    var ctx = currentContext;
+    if (ctx) {
+        contextStorage[ctx.req.uid] = ctx;
+        return ctx.req.uid;
+    }
 };
 
 /**
- * 获取请求上下文
+ * 恢复上下文
+ *
+ * @public
+ * @param {string} id 上下文id
+ * @return {boolean}
+ */
+exports.revertContext = function (id) {
+    if (contextStorage[id]) {
+        currentContext = contextStorage[id];
+        return true;
+    }
+    return false;
+};
+
+/**
+ * 获取上下文
  *
  * @public
  * @return {Object}
