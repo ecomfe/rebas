@@ -80,6 +80,22 @@ var currentContext;
 var contextStorage = {};
 
 /**
+ * 清除请求上下文
+ *
+ * @inner
+ * @param {string} id 上下文id
+ */
+function clearContext(id) {
+    if (contextStorage.hasOwnProperty(id)) {
+        delete contextStorage[id];
+    }
+
+    if (currentContext && currentContext.req.uid === id) {
+        currentContext = null;
+    }
+}
+
+/**
  * 设置当前的上下文
  *
  * @param {Object} req 请求对象
@@ -87,22 +103,14 @@ var contextStorage = {};
  * @param {Function} next 执行下一个中间件
  */
 function setContext(req, res, next) {
-    currentContext = {req: req, res: res};
-    next();
-}
-
-/**
- * 清除暂存的上下文
- *
- * @param {Object} req 请求对象
- * @param {Object} res 响应对象
- * @param {Function} next 执行下一个中间件
- */
-function clearContext(req, res, next) {
     var id = req.uid;
-    if (contextStorage.hasOwnProperty(id)) {
-        delete contextStorage[id];
-    }
+
+    currentContext = {req: req, res: res};
+    // 请求结束时清除缓存的context
+    res.on('finish', function () {
+        clearContext(id);
+    });
+
     next();
 }
 
@@ -133,8 +141,6 @@ function attachMiddleware(app, options) {
         app.use(fn);
     });
 
-    // 清除上下文
-    app.use(clearContext);
     // 页面渲染中间件
     var renderHTML = require('./lib/middleware/renderHTML');
     app.use(renderHTML({
