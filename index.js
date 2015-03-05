@@ -124,6 +124,24 @@ exports.getContext = function () {
 };
 
 /**
+ * 使用第三方模块
+ *
+ * @public
+ * @param {Array.<Object>} modules 第三方模块
+ */
+exports.use = function (modules) {
+    if (!Array.isArray(modules)) {
+        modules = Array.prototype.slice.call(arguments);
+    }
+
+    modules.forEach(function (m) {
+        if (m.rebas) {
+            m.rebas(exports);
+        }
+    });
+};
+
+/**
  * 加载路由信息
  *
  * @public
