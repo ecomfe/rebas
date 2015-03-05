@@ -48,20 +48,21 @@ require('./lib/tpl');
  * @param {Function} next 执行下一个路由处理器
  */
 function run(route, path, query, res, next) {
-    var presenter = mm.create(route.action);
-    var ele = new Element('div');
+    mm.create(route.action).then(function (presenter) {
+        var ele = new Element('div');
 
-    presenter
-        .enter(ele, path, query)
-        .then(
-            function () {
-                var model = presenter.model;
-                res.html = ele.outerHTML;
-                res.data = model.store;
-                next();
-            },
-            next
-        );
+        presenter
+            .enter(ele, path, query)
+            .then(
+                function () {
+                    var model = presenter.model;
+                    res.html = ele.outerHTML;
+                    res.data = model.store;
+                    next();
+                },
+                next
+            );
+    });
 }
 
 /**
@@ -147,6 +148,9 @@ exports.load = function (routes) {
  * @param {Object=} options.templateConfig 模版配置信息
  * @param {Object=} options.templatedata 通用模版数据
  * @param {string=} options.indexFile 首页模版文件
+ * @param {Object=} options.Presenter Presenter基类
+ * @param {Object=} options.View View基类
+ * @param {Object=} options.Model Model基类
  */
 exports.start = function (port, options) {
     log.info('server starting ...');
@@ -159,7 +163,10 @@ exports.start = function (port, options) {
     mm.config({
         template: options.template,
         templateConfig: options.templateConfig,
-        templateData: options.templateData
+        templateData: options.templateData,
+        Presenter: options.Presenter,
+        View: options.View,
+        Model: options.Model
     });
 
     var app = express();
@@ -198,7 +205,7 @@ exports.setSyncData = function (name, value) {
  * 添加前缀中间件
  *
  * @public
- * @param {Function} middleware
+ * @param {Function} middleware 中间件
  */
 exports.before = function (middleware) {
     beforeMiddlewares.push(middleware);
@@ -208,7 +215,7 @@ exports.before = function (middleware) {
  * 添加后缀中间件
  *
  * @public
- * @param {Function} middleware
+ * @param {Function} middleware 中间件
  */
 exports.after = function (middleware) {
     afterMiddlewares.push(middleware);
