@@ -42,12 +42,13 @@ require('./lib/tpl');
  * @inner
  * @param {Object} route 路由信息
  * @param {Object} route.action Presenter配置
+ * @param {Object} index 路由信息序列
  * @param {string} path 请求路径
  * @param {Object} query 请求参数
  * @param {Object} res 请求响应对象
  * @param {Function} next 执行下一个路由处理器
  */
-function run(route, path, query, res, next) {
+function run(route, index, path, query, res, next) {
     mm.create(route.action).then(function (presenter) {
         var ele = new Element('div');
 
@@ -58,6 +59,7 @@ function run(route, path, query, res, next) {
                     var model = presenter.model;
                     res.html = ele.outerHTML;
                     res.data = model.store;
+                    res.routeIndex = index;
                     next();
                 },
                 next
@@ -152,6 +154,28 @@ function attachMiddleware(app, options) {
 }
 
 /**
+ * 获取saber-mm需要的配置信息
+ *
+ * @param {Object} options 配置信息
+ * @return {Object}
+ */
+function getConfig4mm(options) {
+    var res = {};
+    var names = [
+        'template', 'templateConfig', 'templateData',
+        'basePath', 'Presenter', 'Model', 'View'
+    ];
+
+    names.forEach(function (name) {
+        if (name in options) {
+            res[name] = options[name];
+        }
+    });
+
+    return res;
+};
+
+/**
  * 暂存上下文
  *
  * @public
@@ -218,8 +242,8 @@ exports.load = function (routes) {
     if (!Array.isArray(routes)) {
         routes = [routes];
     }
-    routes.forEach(function (route) {
-        router.add(route.path, run.bind(null, route));
+    routes.forEach(function (route, index) {
+        router.add(route.path, run.bind(null, route, index));
     });
 };
 
@@ -245,14 +269,7 @@ exports.start = function (port, options) {
     options = options || {};
 
     // saber-mm 配置
-    mm.config({
-        template: options.template,
-        templateConfig: options.templateConfig,
-        templateData: options.templateData,
-        Presenter: options.Presenter,
-        View: options.View,
-        Model: options.Model
-    });
+    mm.config(getConfig4mm(options));
 
     var app = express();
 
