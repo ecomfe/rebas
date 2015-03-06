@@ -1,6 +1,6 @@
 {
   "name": "rebas",
-  "version": "0.4.0-alpha.2",
+  "version": "0.4.0-alpha.3",
   "description": "Node runtime for Saber",
   "main": "index.js",
   "maintainers": [
@@ -9,9 +9,6 @@
       "email": "c.xinle@gmail.com"
     }
   ],
-  "scripts": {
-    "test": "jasmine-node test/"
-  },
   "contributors": [
     {
       "name": "redmed",
