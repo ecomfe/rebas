@@ -218,18 +218,15 @@ exports.getContext = function () {
  * 使用第三方模块
  *
  * @public
- * @param {Array.<Object>} modules 第三方模块
+ * @param {<Object>} m 第三方模块
  */
-exports.use = function (modules) {
-    if (!Array.isArray(modules)) {
-        modules = Array.prototype.slice.call(arguments);
-    }
+exports.use = function (m) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    args.unshift(exports);
 
-    modules.forEach(function (m) {
-        if (m.rebas) {
-            m.rebas(exports);
-        }
-    });
+    if (m.rebas) {
+        m.rebas.apply(m, args);
+    }
 };
 
 /**
