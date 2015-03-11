@@ -34,7 +34,7 @@ process.on('uncaughtException', function (e) {
 });
 
 // 启动tpl扩展
-require('./lib/tpl');
+require('./lib/tpl').enable();
 
 /**
  * 运行Presenter
