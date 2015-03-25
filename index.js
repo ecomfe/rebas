@@ -173,7 +173,7 @@ function getConfig4mm(options) {
     });
 
     return res;
-};
+}
 
 /**
  * 暂存上下文
@@ -218,7 +218,7 @@ exports.getContext = function () {
  * 使用第三方模块
  *
  * @public
- * @param {<Object>} m 第三方模块
+ * @param {Object} m 第三方模块
  */
 exports.use = function (m) {
     var args = Array.prototype.slice.call(arguments, 1);
