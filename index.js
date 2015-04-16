@@ -49,22 +49,24 @@ require('./lib/tpl').enable();
  * @param {Function} next 执行下一个路由处理器
  */
 function run(route, index, path, query, res, next) {
-    mm.create(route.action).then(function (presenter) {
-        var ele = new Element('div');
+    mm.create(route.action).then(
+        function (presenter) {
+            var ele = new Element('div');
 
-        presenter
-            .enter(ele, path, query)
-            .then(
-                function () {
-                    var model = presenter.model;
-                    res.html = ele.outerHTML;
-                    res.data = model.store;
-                    res.routeIndex = index;
-                    next();
-                },
-                next
-            );
-    });
+            function finish() {
+                var model = presenter.model;
+                res.html = ele.outerHTML;
+                res.data = model.store;
+                res.routeIndex = index;
+                next();
+            }
+
+            presenter
+                .enter(ele, path, query)
+                .then(finish, next);
+        },
+        next
+    ).then(null, next);
 }
 
 /**
