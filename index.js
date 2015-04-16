@@ -75,29 +75,6 @@ function run(route, index, path, query, res, next) {
 var currentContext;
 
 /**
- * 上下文存储容器
- *
- * @type {Object}
- */
-var contextStorage = {};
-
-/**
- * 清除请求上下文
- *
- * @inner
- * @param {string} id 上下文id
- */
-function clearContext(id) {
-    if (contextStorage.hasOwnProperty(id)) {
-        delete contextStorage[id];
-    }
-
-    if (currentContext && currentContext.req.uid === id) {
-        currentContext = null;
-    }
-}
-
-/**
  * 设置当前的上下文
  *
  * @param {Object} req 请求对象
@@ -105,14 +82,7 @@ function clearContext(id) {
  * @param {Function} next 执行下一个中间件
  */
 function setContext(req, res, next) {
-    var id = req.uid;
-
     currentContext = {req: req, res: res};
-    // 请求结束时清除缓存的context
-    res.on('finish', function () {
-        clearContext(id);
-    });
-
     next();
 }
 
@@ -176,32 +146,19 @@ function getConfig4mm(options) {
 }
 
 /**
- * 暂存上下文
- *
- * @public
- * @return {string}
- */
-exports.stashContext = function () {
-    var ctx = currentContext;
-    if (ctx) {
-        contextStorage[ctx.req.uid] = ctx;
-        return ctx.req.uid;
-    }
-};
-
-/**
  * 恢复上下文
  *
  * @public
- * @param {string} id 上下文id
+ * @param {Object} ctx 上下文
  * @return {boolean}
  */
-exports.revertContext = function (id) {
-    if (contextStorage[id]) {
-        currentContext = contextStorage[id];
-        return true;
+exports.revertContext = function (ctx) {
+    if (!ctx || !ctx.res || ctx.res.headersSent) {
+        return false;
     }
-    return false;
+
+    currentContext = ctx;
+    return true;
 };
 
 /**
