@@ -280,7 +280,7 @@ exports.after = function (middleware) {
 };
 
 // 运行环境设置
-require('./lib/env')(exports);
+require('./lib/env').enable(exports);
 
 // Export Logger
 exports.logger = log;
