@@ -3,13 +3,13 @@ Rebas
 
 Node runtime for [Saber](https://github.com/ecomfe/saber)，base on [Express](http://expressjs.com)
 
-[Saber](https://github.com/ecomfe/saber) 的 node 运行环境，让您在享受 SPA 高內聚、低耦合开发方式的同时具有优秀的首屏呈现速度与良好的 SEO 。
+[Saber](https://github.com/ecomfe/saber) 的 node 运行环境，让您在享受 SPA 高內聚、低耦合开发方式的同时拥有优秀的首屏呈现速度与良好的 SEO 。
 
 ## How
 
-Rebas 使首屏渲染由服务器端完成，极大地降低了 SPA 首屏的白屏时间与 SEO 问题。借助于 node ，服务器端的渲染逻辑不用额外开发，只需要对现有的 Saber 应用进行小幅修改就能让已有的逻辑同时运行在客户端与服务器端。
+Rebas 使首屏渲染由服务器端完成，极大地降低了 SPA 首屏的白屏时间并解决了 SEO 问题。借助于 node ，服务器端的渲染逻辑不用额外开发，只需要对现有的 Saber 应用进行小幅修改就能让已有的逻辑同时运行在客户端与服务器端。
 
-Saber 所有的基础组件都进行了同构升级，确保所有模块都能同时运行在客户端与服务器端。对于业务开发只需聚焦业务逻辑，不用特别关注运行平台，剩下的一切就交给 Saber 与 Rebas 吧～
+Saber 所有的基础组件都进行了同构升级，确保能同时运行在客户端与服务器端。对于业务开发只需聚焦业务逻辑，不用特别关注运行平台，剩下的一切就交给 Saber 与 Rebas 吧～
 
 ## Usage
 
@@ -46,14 +46,14 @@ $ node app.js
 * **port** `{number=}` 端口号，默认为 `8000`
 * **options** `{Object=}` 配置项
     * **template** `{string=}` 公共模版
-    * **templateConfig** `{Object=}` 模版引擎配置信息，`rebas` 使用强复用、灵活、高性能的 [etpl](http://ecomfe.github.io/etpl/) 模版引擎，具体配置项请参考 [etpl 配置项](https://github.com/ecomfe/etpl/blob/master/doc/config.md)
+    * **templateConfig** `{Object=}` 模版引擎配置信息，`rebas` 使用强复用、灵活、高性能的 [etpl](http://ecomfe.github.io/etpl/) 模版引擎，具体配置请参考 [etpl 配置项](https://github.com/ecomfe/etpl/blob/master/doc/config.md)
     * **templateData** `{Object=}` 全局模版数据
     * **indexFile** `{string=}` 主页面模版文件路径，默认为根目录下的 `index.html`
     * **Presenter** `{Function=}` 自定义 Presenter 基类
     * **View** `{Function=}` 自定义 View 基类
     * **Model** `{Function=}` 自定义 Model 基类
 
-`rebas` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 说明请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm)
+`rebas` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm)
 
 #### load(routes)
 

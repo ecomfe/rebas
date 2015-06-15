@@ -23,7 +23,7 @@ edp mobile init iso
 
 ## 添加业务逻辑
 
-使用 `add` 命令能方便的新增页面
+使用 `add` 命令能方便的新增业务逻辑
 
 ```sh
 $ edp mobile add /
@@ -41,13 +41,14 @@ $ edp mobile add /
 
 ```js
 // 修改`indexModel.js` 文件中的 `fetch` 方法
+// 返回页面渲染需要的数据
 config.fetch = function () {
     return Resolver.resloved({name: 'Saber'});
 };
 ```
 
 ```
-<!-- 修改 `index.tpl` 文件 -->
+<!-- 修改 `index.tpl` 文件，呈现页面 -->
 Hello ${name}
 ```
 
@@ -61,6 +62,12 @@ $ edp mobile start
 
 第一次启动服务器可能需要点时间，启动之前会先自动安装缺失的依赖。完成后访问 `http://127.0.0.1:8848` 试试吧～
 
-自测服务器对相关文件进行了实时监控，所以任何文件修改后都无需重启服务，直接刷新页面就可以看到效果了
+自测服务器会对相关文件进行实时监控，文件修改后都无需重启服务，直接刷新页面就可以看到效果了
 
 ## 了解更多
+
+由[saber-mm](https://github.com/ecomfe/saber-mm) 提供核心的 `MVP` 实现，服务器端由 [rebas](https://github.com/ecomfe/rebas) 驱动，浏览器端由 [saber-firework](https://github.com/ecomfe/saber-firework) 提供运行环境，三者配合辅以各种功能专一的 saber 同构模块共同协作，提供完整的深度响应式应用框架。
+
+* 了解 `MVP` 各部分的配置与API，请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm#classes)
+* 了解详细的浏览器端运行环境配置，请参考 [saber-firework 的说明文档](https://github.com/ecomfe/saber-firework#api)
+* 了解详细的服务器端运行环境配置，请参考 [rebas 的说明文档](https://github.com/ecomfe/rebas#api)
