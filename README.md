@@ -53,7 +53,7 @@ $ node app.js
     * **View** `{Function=}` 自定义 View 基类
     * **Model** `{Function=}` 自定义 Model 基类
 
-`rebas` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm)
+`rebas` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm#classes)
 
 #### load(routes)
 
