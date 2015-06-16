@@ -18,7 +18,7 @@
   "scripts": {
     "test": "jasmine-node --verbose test"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "etpl": "^3.0.0",
     "express": "^4.10.2",
