@@ -1,5 +1,7 @@
-Rebas [![NPM version](https://img.shields.io/npm/v/rebas.svg?style=flat-square)](https://npmjs.org/package/rebas) [![Build Status](https://img.shields.io/travis/ecomfe/rebas.svg?style=flat-square)](https://travis-ci.org/ecomfe/rebas) [![License](https://img.shields.io/npm/l/rebas.svg?style=flat-square)](./LICENSE) [![EFE Mobile Team](https://img.shields.io/badge/EFE-Mobile_Team-blue.svg?style=flat-square)](http://efe.baidu.com)
+Rebas
 ===
+
+[![NPM version](https://img.shields.io/npm/v/rebas.svg?style=flat-square)](https://npmjs.org/package/rebas) [![Build Status](https://img.shields.io/travis/ecomfe/rebas.svg?style=flat-square)](https://travis-ci.org/ecomfe/rebas) [![License](https://img.shields.io/npm/l/rebas.svg?style=flat-square)](./LICENSE) [![EFE Mobile Team](https://img.shields.io/badge/EFE-Mobile_Team-blue.svg?style=flat-square)](http://efe.baidu.com)
 
 Node runtime for [Saber](https://github.com/ecomfe/saber)，base on [Express](http://expressjs.com)
 
