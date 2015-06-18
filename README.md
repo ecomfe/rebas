@@ -1,162 +1,148 @@
 Rebas
 ===
 
-Node framework for [Saber](https://github.com/ecomfe/saber)，base on [Express](http://expressjs.com)
+[![NPM version](https://img.shields.io/npm/v/rebas.svg?style=flat-square)](https://npmjs.org/package/rebas) [![Build Status](https://img.shields.io/travis/ecomfe/rebas.svg?style=flat-square)](https://travis-ci.org/ecomfe/rebas) [![License](https://img.shields.io/npm/l/rebas.svg?style=flat-square)](./LICENSE) [![EFE Mobile Team](https://img.shields.io/badge/EFE-Mobile_Team-blue.svg?style=flat-square)](http://efe.baidu.com)
 
-## Installation
+Node runtime for [Saber](https://github.com/ecomfe/saber)，base on [Express](http://expressjs.com)
 
-```sh
-$ npm install rebas
-```
+[Saber](https://github.com/ecomfe/saber) 的 node 运行环境，让您在享受 SPA 高內聚、低耦合开发方式的同时拥有优秀的首屏呈现速度与良好的 SEO 。
+
+## How
+
+Rebas 使首屏渲染由服务器端完成，极大地降低了 SPA 首屏的白屏时间并解决了 SEO 问题。借助于 node ，服务器端的渲染逻辑不用额外开发，只需要对现有的 Saber 应用进行小幅修改就能让已有的逻辑同时运行在客户端与服务器端。
+
+Saber 所有的基础组件都进行了同构升级，确保能同时运行在客户端与服务器端。对于业务开发只需聚焦业务逻辑，不用特别关注运行平台，剩下的一切就交给 Saber 与 Rebas 吧～
 
 ## Usage
 
 ```js
-var rebas = require('rebas');
+/**
+ * @fila app.js 应用启动脚本
+ */
+var app = require('rebas');
 
-var server = rebas(function (app) {
-    // 添加自定义处理器
-    ...
-});
+// 加载路由配置
+app.load(require('./lib/config'));
 
-// 启动服务器
-server.start();
+// 启动服务
+app.start();
 ```
 
-项目目录结构：
+```sh
+$ node app.js
 ```
-├──┬  config/ // server配置文件目录
-│  ├───  app.json // 应用配置文件
-│  ├───  rebas.json // Rebas框架配置文件
-├───  dep/  // 前端第三方依赖
-├───  lib/  // server开发工作目录
-├───  logs/  // 日志文件
-├───  node_modules/
-├──┬  route/ // 路由配置文件件
-│  ├───  config.json // 路由配置文件
-├───  src/ // 前端开发工作目录
-├──┬  tpl/ // 模版文件目录
-│  ├───  config.json // 模版配置文件
-├───  app.js // 服务器主入口
-├───  edp-build-config.js
-├───  edp-webserver-config.js
-├───  index.html // 主框架页面
-├───  module.conf
-├───  package.json
-```
+
+更多详情请参考 [Getting start](doc/start.md) ，从零开始快速构建同构应用
 
 ## API
 
-* [Configure](#configure)
 * [Methods](#methods)
-* [Classes](#classes)
-
-### Configure
-
-#### config/app.json
-
-应用配置文件，其中的信息会做为`request`的`appConfig`属性
-
-#### config/rebas.json
-
-框架配置文件，可省略，默认的配置如下：
-
-```js
-{
-    "port": 8000, // 服务器端口号
-    "cluster": 0, // worker进程数，可以直接写'max'，自动取最大值
-    "route": "route", // 路由配置文件目录
-    "template": "tpl", // 模版文件目录
-    "templateCommon": "tpl/common", // 公共模版文件目录
-    "action": "lib" // server开发工作目录
-}
-```
-
-#### 路由配置
-
-每个`JSON`文件存储`Array`类型的一个或者多个路由信息，每项路由信息为`Object`类型，必须包含以下字段：
-
-* **path** `{string}` 路径
-* **action** `{string}` Action配置信息文件路径（相对于`lib`目录而言）
-
-例如以下的配置信息
-
-```js
-{"path": "/", "action": "index"}
-```
-
-表示处理`/`请求的Action配置文件为`lib/index.js`
-
-#### Action配置
-
-Action配置文件中可配置一个或者多个HTTP Methods对应的处理函数，目前支持的HTTP Methods有`GET`、`POST`、`PUT`、`HEAD`、`DELETE`、`OPTIONS`
-
-每个HTTP Method对应的配置可以是一个`function`或者`Array<function>`，比如：
-
-```js
-// 注意 这里代表HTTP Method的方法名是小写哟～
-exports.get = function (req, res, next) {
-    // do business
-    ...
-};
-```
-其中处理函数的参数描述如下：
-
-* **req** `{Request}` [HTTP请求对象](doc/request.md)
-* **res** `{Response}` [HTTP响应对象](doc/response.md)
-* **next** `{function}` 执行下一个处理器
-
-#### 主框架页面
-
-位于根目录的`index.html`，标准的HTML文件。使用占位符`<!-- rebas:xxx -->`方便渲染实际页面时插入动态数据。其中固有的占位符是`<!-- rebas:content -->`，表示后续渲染内容的插入位置，比如：
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Startup News</title>
-
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="format-detection" content="telephone=no">
-
-    <link rel="stylesheet" href="/src/common/app.css">
-    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-6/esl.js"></script>
-
-    <script>
-        // AMD Loader Configure
-        require.config({
-            ...
-        });
-    </script>
-</head>
-<body>
-    <div id="viewport">
-        <!-- 默认的内容占位符 后续动态渲染的页面会插入此处 -->
-        <!-- rebas: content -->
-    </div>
-    <script>
-        // 启动前端代码
-        require(['app'], function (app) {
-            app.init();
-        });
-    </script>
-</body>
-</html>
-```
+* [Config](#config)
 
 ### Methods
 
-#### rebas(fn)
+#### start(port, options)
 
-创建[Server实例](doc/server.md)
+启动服务
 
-* **fn** `{function(App)}` server配置函数，参数是[App实例](doc/app.md)
-* _return_ `{Server}` [Server实例](doc/server.md)
+* **port** `{number=}` 端口号，默认为 `8000`
+* **options** `{Object=}` 配置项
+    * **template** `{string=}` 公共模版
+    * **templateConfig** `{Object=}` 模版引擎配置信息，`rebas` 使用强复用、灵活、高性能的 [etpl](http://ecomfe.github.io/etpl/) 模版引擎，具体配置请参考 [etpl 配置项](https://github.com/ecomfe/etpl/blob/master/doc/config.md)
+    * **templateData** `{Object=}` 全局模版数据
+    * **indexFile** `{string=}` 主页面模版文件路径，默认为根目录下的 `index.html`
+    * **Presenter** `{Function=}` 自定义 Presenter 基类
+    * **View** `{Function=}` 自定义 View 基类
+    * **Model** `{Function=}` 自定义 Model 基类
 
-### Classes
+`rebas` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm#classes)
 
-* [Server](doc/server.md)
-* [App](doc/app.md)
+#### load(routes)
+
+加载路由配置
+
+* **routes** `{Object|Array.<Object>}` 路由配置信息，必须包含以下两个必填字段：
+    * **path** `{string|RegExp}` 路径，必须是以 `/` 开头的有效路径字符串或者正则表达式，字符串可以包含以`:`开头的参数化路径，例如：`/detail/:id`
+    * **action** `{string|Object}` Presenter 配置信息，如果是字符串则表示对应文件的路径（为啥叫`action`而不是`presenter`，嗯... 历史原因...）
+
+#### get(name)
+
+获取存储在 `配置文件夹` 下的 `JSON` 配置信息，`配置文件夹` 的默认路径为 `config`
+
+* **name** `{string}` 配置文件名称，不包含 `.json` 后缀名
+* _return_ `{*}` 配置信息
+
+例如需要获取 `config/app.json` 文件中的配置信息可以通过如下方式获得：
+
+```js
+var app = require('rebas');
+
+// 获取 `config/app.json` 中的配置信息
+app.get('app');
+```
+
+可以通过添加应用启动的参数来修改默认的 `配置文件夹` 路径，例如：
+
+```sh
+$ node app.js config-dev
+```
+
+此时通过 `get` 获取的配置信息就来源于 `config-dev` 文件夹，可以通过此种方式在多种不同环境、不同配置下自由切换
+
+#### before(middleware)
+
+添加在执行页面逻辑前执行的中间件
+
+* **middleware** `{Function}` 中间件，`rebas` 基于 [express](http://expressjs.com/) 提供 Web 服务，兼容 [express middleware](http://expressjs.com/guide/using-middleware.html)，具体请参考 [express API](http://expressjs.com/4x/api.html#app.use)
+
+#### after(middleware)
+
+添加在页面逻辑执行完成后执行的中间件
+
+* **middleware** `{Function}` 中间件
+
+#### use(plugin)
+
+使用插件
+
+* **plugin** `{Object}` 插件对象，插件必须包含 `rebas` 方法用于初始化，具体的方法说明如下：
+    * **rebas** `{function(app, ...*)}` 插件初始化方法，第一个参数为 `rebas` 实例，其余参数为调用 `use` 方法时传入的剩余参数
+
+#### setSyncData(name, value)
+
+设置需要前后端同步的数据，设置后前端的运行框架 [saber-firework](https://github.com/ecomfe/saber-firework) 可以通过其 API 获取到对应的数据
+
+* **name** `{string}` 数据名称
+* **value** `{*}` 数据值，建议为 `number`、`string` 类型，或者其它任何可以被 `JSON.stringify` 方法序列化的数据类型
+
+### Config
+
+以下所有的配置信息都是以 `JSON` 文件的形式存储在 `配置文件夹` 下，`配置文件夹` 的默认路径为 `config`
+
+#### log
+
+日志配置文件 `log.json` ，`rebas` 使用 [log4js-node](https://github.com/nomiddlename/log4js-node) 提供日志服务，相关配置信息更详细的说明请参考 [log4js-node 的配置说明](https://github.com/nomiddlename/log4js-node/wiki/Appenders)，默认的配置信息如下：
+
+```js
+{
+    // 是否将日志输出到标准输出(stdout)
+    console: false,
+    // 日志等级
+    level: 'INFO',
+    // 日志类型，默认为按时间分割的日志文件
+    type: 'dateFile',
+    // 日志默认存储在 `log` 目录下，名为 `rebas.log`
+    filename: 'log/rebas.log',
+    // 日志以小时级别切分
+    patter: '-MM-dd-hh',
+    alwaysIncludePattern: false,
+    // 日志输出格式
+    layout: {
+        type: 'pattern',
+        pattern: '[%d] [%x{pid}] [%p] - %m',
+        tokens: {
+            pid: process.pid
+        }
+    }
+}
+```
