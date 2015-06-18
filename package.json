@@ -24,9 +24,9 @@
     "express": "^4.10.2",
     "log4js": "^0.6.22",
     "mkdirp": "^0.5.0",
-    "saber-lang": "^2.0.0-beta.1",
-    "saber-mm": "^0.4.0",
-    "saber-promise": "^2.0.0-beta.1",
+    "saber-lang": "^2.0.0",
+    "saber-mm": "^1.0.0",
+    "saber-promise": "^2.0.0",
     "uid-safe": "^1.1.0"
   },
   "devDependencies": {
